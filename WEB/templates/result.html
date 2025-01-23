@@ -53,17 +53,37 @@
 
         <!-- Recipe Details -->
         <h2 class="mt-4">Recipe Details</h2>
-        {% for recipe_name, items in grouped_recipes|groupby('레시피명') %}
-        <h4>{{ recipe_name }}</h4>
-        <ul class="list-group">
-            {% for item in items %}
-            <li class="list-group-item">
-                <strong>{{ item['식재료명'] }}</strong>: {{ item['식재료양'] }}
-            </li>
+        <div class="row">
+            {% for recipe_name, items in grouped_recipes|groupby('레시피명') %}
+            <div class="col-md-6 mb-4">
+                <!-- 레시피 카드 -->
+                <div class="card h-100">
+                    <div class="card-header text-center bg-primary text-white">
+                        <h5>{{ recipe_name }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            {% for item in items %}
+                            <div class="col-md-6 mb-2">
+                                <div class="list-group-item">
+                                    <strong>{{ item['식재료명'] }}</strong>: {{ item['식재료양'] }}
+                                </div>
+                            </div>
+                            {% if loop.index % 4 == 0 %} <!-- 4개 단위로 줄바꿈 -->
+                        </div>
+                        <div class="row">
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% if loop.index % 2 == 0 %} <!-- 2개 단위로 레시피 줄바꿈 -->
+        </div>
+        <div class="row">
+            {% endif %}
             {% endfor %}
-        </ul>
-        {% endfor %}
-
+        </div>
         <!-- Back Button -->
         <div class="mt-4">
             <a href="/" class="btn btn-primary">홈으로</a>
