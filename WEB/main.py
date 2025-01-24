@@ -11,8 +11,8 @@ app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 
 # 데이터 로드
-food_data = pd.read_csv('../data/reci_data_float.csv')
-recipe_data = pd.read_csv('../data/recipe_list.csv')
+food_data = pd.read_csv('../data/전처리후/reci_data_float.csv')
+recipe_data = pd.read_csv('../data/전처리전/recipe_list.csv')
 
 select_1 = food_data.loc[food_data['레시피구분'].isin(['밥류', '면류', '죽류'])]
 select_2 = food_data.loc[food_data['레시피구분'].isin(['볶음류', '구이류', '조림류','찜류','부침류','튀김류'])]
