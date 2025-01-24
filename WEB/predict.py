@@ -100,36 +100,6 @@ async def recommend_diet(
     # 예측 결과
     weight_change_prediction = round(prediction_original[0][0], 2)
 
-    # 추천 식단 계산 (생략 가능)
-    remaining_calories = recommended_calories
-    recommendations = []
-
-    # 1. select_1 추천
-    food = select_1.sample(1)
-    food['열량'] = food['열량'].astype(float)
-    recommendations.append(food)
-    remaining_calories -= food['열량'].sum()
-
-    # 2. select_3 추천
-    food = select_3.sample(1)
-    food['열량'] = food['열량'].astype(float)
-    recommendations.append(food)
-    remaining_calories -= food['열량'].sum()
-
-    # 3. select_2 추천
-    food = select_2.sample(1)
-    food['열량'] = food['열량'].astype(float)
-    recommendations.append(food)
-    remaining_calories -= food['열량'].sum()
-
-    # 최종 추천 음식 합치기
-    final_recommendations = pd.concat(recommendations)
-    total_recommended_calories = round(final_recommendations['열량'].sum(), 2)
-    result_df = final_recommendations[['레시피명', '열량']].copy()
-
-    # 추천 레시피 세부 식재료 그룹화 및 정리
-    grouped_recipes = recipe_data[recipe_data['레시피명'].isin(final_recommendations['레시피명'])]
-    grouped_recipes = grouped_recipes[['레시피명', '식재료명', '식재료양']].set_index('레시피명').reset_index()
 
     # 템플릿에 전달
     return templates.TemplateResponse("result.html", {

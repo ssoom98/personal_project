@@ -2,13 +2,19 @@ from fastapi import FastAPI, Form, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from typing import List, Dict, Optional
+from tensorflow.keras.models import load_model
+import numpy as np
+from sklearn.preprocessing import StandardScaler
+import joblib
 import pandas as pd
+import pickle
+import os
 
 # FastAPI 앱 생성
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 
-# 데이터 로드 (실제 환경에서는 경로를 조정)
+# 데이터 로드
 food_data = pd.read_csv('../data/reci_data_float.csv')
 recipe_data = pd.read_csv('../data/recipe_list.csv')
 
@@ -17,6 +23,11 @@ select_2 = food_data.loc[food_data['레시피구분'].isin(['볶음류', '구이
 select_3 = food_data.loc[food_data['레시피구분'].isin(['무침류', '김치류'])]
 select_4 = food_data.loc[food_data['레시피구분'].isin(['국류'])]
 select_5 = food_data.loc[food_data['레시피구분'].isin(['보조식'])]
+
+# 예측할 모델
+model = load_model("model.h5")
+loaded_objects = joblib.load("scaler_and_data.pkl")
+scaler_X = loaded_objects["scaler_X"]
 
 @app.get("/", response_class=HTMLResponse)
 @app.get("/recommend_diet/", response_class=HTMLResponse)
@@ -45,7 +56,7 @@ async def recommend_diet(
     # BMI 계산
     BMI = round(weight / ((height * 0.01) ** 2),2)
 
-    # BMR 계산
+    # BMR 계산(나이 키 몸무게 활동량에 정해진 계산식에 해당하는 권장섭취량 #비만인에게는 과도하게 높게나옴)
     if gender == '남자':
         BMR = round(662 - 9.53 * age + (15.91 * weight + 5.396 * height) * activity_factor,2)
     else:
@@ -63,13 +74,13 @@ async def recommend_diet(
             recommended_calories = round((BMR - 500) * 0.33,2)
     else:
         if BMI < 22:
-            recommended_calories = (BMR + 500) * 0.33
+            recommended_calories = round((BMR + 500) * 0.33, 2)
         elif 22 <= BMI < 34:
-            recommended_calories = BMR * 0.33
+            recommended_calories = round(BMR * 0.33,2)
         elif 34 <= BMI < 40:
-            recommended_calories = BMR * 0.8 * 0.33
+            recommended_calories = round(BMR * 0.8 * 0.33,2)
         else:
-            recommended_calories = (BMR - 500) * 0.33
+            recommended_calories = round((BMR - 500) * 0.33,2)
 
     remaining_calories = recommended_calories
     recommendations = []
@@ -125,6 +136,32 @@ async def recommend_diet(
     grouped_recipes = recipe_data[recipe_data['레시피명'].isin(final_recommendations['레시피명'])]
     grouped_recipes = grouped_recipes[['레시피명', '식재료명', '식재료양']].set_index('레시피명').reset_index()
 
+    # 일일 칼로리 잉여/적자
+    calorie_balance = (recommended_calories*3)-BMR
+    print(calorie_balance)
+    # 독립변수 준비
+    input_data = pd.DataFrame([{
+        "age": age,
+        "gender": 1 if gender == "남자" else 2,
+        "height": height,
+        "weight": weight,
+        "activity_factor": activity_factor,
+        "BMR": BMR,
+        "energy_intake": recommended_calories*3,
+        "calorie_balance": calorie_balance
+    }])
+
+    # 열 이름 통일 (scaler_X 학습 시 열 이름과 동일하게 설정)
+    input_data.columns = scaler_X.feature_names_in_
+
+    # 데이터 스케일링
+    input_data_scaled = scaler_X.transform(input_data)
+
+    # 모델 예측
+    prediction_scaled = model.predict(input_data_scaled)
+
+    # 예측 결과
+    weight_change_prediction = round(prediction_scaled[0][0], 2)
     # 템플릿에 전달
     return templates.TemplateResponse("result.html", {
         "request": request,
@@ -134,5 +171,6 @@ async def recommend_diet(
         "BMI": BMI,
         "recommended_diet": result_df.to_dict(orient="records"),
         "total_calories": total_recommended_calories,
-        "grouped_recipes": grouped_recipes.to_dict(orient="records")
+        "grouped_recipes": grouped_recipes.to_dict(orient="records"),
+        "weight_change_prediction": weight_change_prediction
     })
