@@ -1,14 +1,10 @@
 from fastapi import FastAPI, Form, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
-from typing import List, Dict, Optional
 from tensorflow.keras.models import load_model
-import numpy as np
-from sklearn.preprocessing import StandardScaler
 import joblib
 import pandas as pd
-import pickle
-import os
+
 
 # FastAPI 앱 생성
 app = FastAPI()
@@ -25,8 +21,8 @@ select_4 = food_data.loc[food_data['레시피구분'].isin(['국류'])]
 select_5 = food_data.loc[food_data['레시피구분'].isin(['보조식'])]
 
 # 예측할 모델
-model = load_model("model.h5")
-loaded_objects = joblib.load("scaler_and_data.pkl")
+model = load_model("models/model.h5")
+loaded_objects = joblib.load("models/scaler_and_data.pkl")
 scaler_X = loaded_objects["scaler_X"]
 
 @app.get("/", response_class=HTMLResponse)
@@ -66,21 +62,29 @@ async def recommend_diet(
     if gender == '남자':
         if BMI < 13:
             recommended_calories = round((BMR + 500) * 0.33, 2)
+            BMI_comment= "저체중입니다. 건강을 위해서 조금 더 드셔야겠어요."
         elif 13 <= BMI < 25:
             recommended_calories = round(BMR * 0.33,2)
+            BMI_comment = "정상체중입니다."
         elif 25 <= BMI < 30:
-            recommended_calories = round(BMR * 0.8 * 0.33,2)
+            recommended_calories = round((BMR -300) * 0.33,2)
+            BMI_comment = '과체중입니다. 조절할 필요가 있습니다.'
         else:
             recommended_calories = round((BMR - 500) * 0.33,2)
+            BMI_comment = '비만입니다. 체중 조절을 위해 적게 드셔야해요.'
     else:
         if BMI < 22:
             recommended_calories = round((BMR + 500) * 0.33, 2)
+            BMI_comment = '저체중입니다. 건강을 위해서 조금 더 드셔야겠어요.'
         elif 22 <= BMI < 34:
             recommended_calories = round(BMR * 0.33,2)
+            BMI_comment = '정상체중입니다.'
         elif 34 <= BMI < 40:
-            recommended_calories = round(BMR * 0.8 * 0.33,2)
+            recommended_calories = round((BMR -300) * 0.33,2)
+            BMI_comment = '과체중입니다. 조절할 필요가 있습니다.'
         else:
             recommended_calories = round((BMR - 500) * 0.33,2)
+            BMI_comment = '비만입니다. 체중 조절을 위해 적게 드셔야해요.'
 
     remaining_calories = recommended_calories
     recommendations = []
@@ -172,5 +176,6 @@ async def recommend_diet(
         "recommended_diet": result_df.to_dict(orient="records"),
         "total_calories": total_recommended_calories,
         "grouped_recipes": grouped_recipes.to_dict(orient="records"),
-        "weight_change_prediction": weight_change_prediction
+        "weight_change_prediction": weight_change_prediction,
+        "BMI_comment":BMI_comment
     })

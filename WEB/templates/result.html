@@ -11,27 +11,41 @@
         <h1 class="text-center">식단 추천</h1>
                 <table class="table table-bordered">
                     <h2 class="mt-4">{{name}}님의 정보</h2>
-                    <thead class="table-dark">
+                    <thead class="table-primary">
                         <tr>
                             <th>일일권장섭취량</th>
                             <th>{{name}}님에게 추천하는 한끼 칼로리</th>
                             <th>비만도계산</th>
-                            <th>추천한 칼로리로 섭취시 몸무게변화 </th>
                         </tr>
+
                         <tbody>
                             <tr>
                                 <td>{{BMR}}</td>
                                 <td>{{recommended_calories}}</td>
                                 <td>{{BMI}}</td>
-                                <td>{{weight_change_prediction}}</td>
+
                             </tr>
+
                         </tbody>
                     </thead>
 
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <td class="table-warning"># 몸무게 변화는 학습을 통한 예측값입니다. 정확하지 않을 수 있습니다.</td>
+                            <th class="table-primary">일주일 후 몸무게변화 </th>
+                        </tr>
+                        <tr>
+                            <td class="table-warning">{{BMI_comment}} </td>
+                            <td>{{weight_change_prediction}}</td>
+                        </tr>
+
+                    </tbody>
+                </table>
         <!-- Recommended Diet Table -->
                 <table class="table table-bordered">
                     <h2 class="mt-4">추천 하는 식단</h2>
-                    <thead class="table-dark">
+                    <thead class="table-info">
                         <tr>
                             <th>음식명</th>
                             <th>열량 (kcal)</th>
