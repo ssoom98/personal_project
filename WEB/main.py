@@ -2,6 +2,8 @@ from fastapi import FastAPI, Form, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from tensorflow.keras.models import load_model
+from keras.losses import MeanSquaredError
+from keras.layers import LeakyReLU
 import joblib
 import pandas as pd
 
@@ -21,7 +23,10 @@ select_4 = food_data.loc[food_data['레시피구분'].isin(['국류'])]
 select_5 = food_data.loc[food_data['레시피구분'].isin(['보조식'])]
 
 # 예측할 모델
-model = load_model("models/model.h5")
+model = load_model("models/model.h5",custom_objects={
+        'LeakyReLU': LeakyReLU,
+        'mse': MeanSquaredError()
+    })
 loaded_objects = joblib.load("models/scaler_and_data.pkl")
 scaler_X = loaded_objects["scaler_X"]
 
