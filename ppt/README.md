@@ -22,4 +22,28 @@
   <img src="https://img.shields.io/badge/css-1572B6?style=for-the-badge&logo=css3&logoColor=white"> 
   <img src="https://img.shields.io/badge/jquery-0769AD?style=for-the-badge&logo=jquery&logoColor=white">
 </div>
-## ppt
+## 목차
+[1. 주제 선정 및 배경]()<br>
+[2. 참조사례]()<br>
+[3. 개발 일정]()<br>
+[4. 개발 환경]()<br>
+[5. 데이터 전처리]()<br>
+[6. 상관분석 및 시각화]()<br>
+[7. 웹구현 시연]()<br>
+[8. 향후 개발 방향]()<br>
+
+## 1. 주제 선정 및 배경
+
+## 2. 참조사례
+
+## 3. 개발 일정
+
+## 4. 개발 환경
+
+## 5. 데이터 전처리
+
+## 6. 시각화 및 상관분석
+
+## 7. 웹구현 시연
+
+## 8. 향후 개발 방향
