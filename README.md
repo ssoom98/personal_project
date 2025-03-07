@@ -8,8 +8,7 @@
 - python library:
 - Python
 - micro Framework : FastAPI
-- 프로젝트 소개 : -	키, 나이, 몸무게, 활동량을 입력 받아 일일 권장 섭취량을 계산하고
---                   비만도에 맞춰 체중 조절이 필요할 시 칼로리 조절시 몸무게 변화 예측
+- 프로젝트 소개 : -	키, 나이, 몸무게, 활동량을 입력 받아 일일 권장 섭취량을 계산하고 비만도에 맞춰 체중 조절이 필요할 시 칼로리 조절시 몸무게 변화 예측
 
 <div align=center> 
   <img src="https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white"> 
